@@ -10,6 +10,7 @@ foreach (var line in lines)
     var split = line.Split(' ');
     HandBidPair pair = new(int.Parse(split[1]));
     foreach (char c in split[0]) pair.AddCard(c);
+    pair.EvaluateJokers();
     pairs.Add(pair);
 }
 
@@ -27,9 +28,57 @@ public class HandBidPair
         Bid = bid;
     }
 
+    public void EvaluateJokers()
+    {
+        int jokerCount = Cards.Count(x => x.Value == 1);
+        if (jokerCount == 0) return;
+        switch (HandValue)
+        {
+            case HandValue.none:
+                HandValue = HandValue.five;
+                break;
+            case HandValue.highcard:
+                HandValue = jokerCount switch
+                {
+                    1 => HandValue.onepair,
+                    2 => HandValue.three,
+                    3 => HandValue.four,
+                    4 => HandValue.five
+                };
+                break;
+            case HandValue.onepair:
+                HandValue = jokerCount switch
+                {
+                    1 => HandValue.three,
+                    2 => HandValue.four,
+                    3 => HandValue.five,
+                };
+                break;
+            case HandValue.twopair:
+                HandValue = HandValue.fullhouse;
+                break;
+            case HandValue.three:
+                HandValue = jokerCount switch
+                {
+                    1 => HandValue.four,
+                    2 => HandValue.five
+                };
+                break;
+            case HandValue.four:
+                if (jokerCount == 1) HandValue = HandValue.five;
+                break;
+
+        }
+    }
+
     public void AddCard(char strVal)
     {
         Card card = new(strVal);
+        if (card.Value == 1)
+        {
+            Cards.Add(card);
+            return;
+        }
         switch (HandValue)
         {
             case HandValue.none:
@@ -92,7 +141,7 @@ public class HandBidPairComparer : Comparer<HandBidPair>
             if (x.Cards[i].Value != y.Cards[i].Value) return x.Cards[i].Value > y.Cards[i].Value ? 1 : -1;
         }
 
-        throw new ArgumentException();
+        return 0;
     }
 }
 
@@ -107,7 +156,7 @@ public class Card
             'A' => 14,
             'K' => 13,
             'Q' => 12,
-            'J' => 11,
+            'J' => 1,
             'T' => 10,
             _ => int.Parse(strVal.ToString()),
         };
