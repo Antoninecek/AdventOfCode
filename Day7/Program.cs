@@ -107,7 +107,7 @@ public class Card
             'A' => 14,
             'K' => 13,
             'Q' => 12,
-            'J' => 1,
+            'J' => 11,
             'T' => 10,
             _ => int.Parse(strVal.ToString()),
         };
