@@ -15,9 +15,11 @@ foreach (var line in lines)
     }
 
     histories.Last().Add(0);
+    histories.ForEach(x=>x.Reverse());
+
     for (int i = histories.Count - 2; i >= 0; i--)
     {
-        histories[i].Add(histories[i + 1].Last() + histories[i].Last());
+        histories[i].Add(histories[i].Last() - histories[i + 1].Last());
     }
     sum += histories.First().Last();
 }
