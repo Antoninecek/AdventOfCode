@@ -4,6 +4,7 @@ Console.WriteLine("Hello, World!");
 var lines = File.ReadAllLines("input10.txt");
 
 char[][] map = new char[lines.Length][];
+bool[][] visitedMap = new bool[lines.Length][];
 
 int indexI = -1;
 int indexJ = -1;
@@ -11,6 +12,7 @@ int indexJ = -1;
 for (int i = 0; i < lines.Length; i++)
 {
     map[i] = new char[lines[i].Length];
+    visitedMap[i] = new bool[lines[i].Length];
     for (int j = 0; j < lines[i].Length; j++)
     {
         char c = lines[i][j];
@@ -34,6 +36,10 @@ while (true)
 {
     nTiles++;
     char currentTile = lines[indexI][indexJ];
+    if (currentTile == '|' || currentTile == 'L' || currentTile == 'J' || currentTile == '7' || currentTile == 'F' || currentTile == 'S')
+    {
+        visitedMap[indexI][indexJ] = true;
+    }
     Console.WriteLine(nTiles + " " + currentTile + " " + indexI + " " + indexJ);
 
     // ziskej napojeny tiles
@@ -156,6 +162,40 @@ while (true)
     }
 }
 Console.WriteLine(nTiles);
+int enclosedTiles = 0;
+for (int i = 0; i < visitedMap.Length; i++)
+{
+    bool start = false;
+    int rowEnclosed = 0;
+    int currEnclosed = 0;
+    for(int j = 0; j < visitedMap[i].Length; j++)
+    {
+        Console.Write(visitedMap[i][j] ? 1 : 0);
+        if (!start && visitedMap[i][j])
+        {
+            start = true;
+            continue;
+        }
+        if(start && !visitedMap[i][j])
+        {
+            currEnclosed++;
+            continue;
+        }
+        if(start && currEnclosed > 0 && visitedMap[i][j])
+        {
+            start = false;
+            rowEnclosed += currEnclosed;
+            continue;
+        }
+    }
+    if (!start)
+    {
+        enclosedTiles += rowEnclosed;
+        Console.Write(" " + rowEnclosed);
+    }
+    Console.WriteLine();
+}
+Console.WriteLine(enclosedTiles);
 
 static char? GetTile(int i, int j, char[][] map)
 {
