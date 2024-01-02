@@ -37,22 +37,27 @@ static int Run(List<string> lines)
         }
         j++;
     }
+
     // najdu na jakym indexu je ve vsech stringach shoda
-    for (int i = 0; i < mirrorIndex[0].Length; i++)
+    Dictionary<int, int> indexCountPair = new();
+    for (int i = 0; i < mirrorIndex.Length; i++)
     {
-        if (mirrorIndex[0][i])
+        for (int k = 0; k < mirrorIndex[i].Length; k++)
         {
-            bool trueIndex = false;
-            for (int k = 0; k < mirrorIndex.Length; k++)
+            if (mirrorIndex[i][k])
             {
-                if (!mirrorIndex[k][i])
+                if (!indexCountPair.TryAdd(k, 1))
                 {
-                    trueIndex = false;
-                    break;
+                    indexCountPair[k]++;
                 }
-                trueIndex = true;
             }
-            if (trueIndex) return i + 1;
+        }
+    }
+    foreach (var key in indexCountPair.Keys)
+    {
+        if (indexCountPair[key] == mirrorIndex.Length - 1)
+        {
+            return key + 1;
         }
     }
 
@@ -64,7 +69,7 @@ static List<string> Transpose(List<string> lines)
 {
     // init
     char[][] ch = new char[lines[0].Length][];
-    for(int i = 0; i < lines[0].Length; i++)
+    for (int i = 0; i < lines[0].Length; i++)
     {
         ch[i] = new char[lines.Count];
     }
